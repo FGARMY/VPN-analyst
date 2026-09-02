@@ -9,13 +9,21 @@ from app.services.seed_data import get_data
 from app.routers import dashboard, tunnels, alerts, reports, analysis, live_logs, packets, remediation, cli, dataset
 
 
+from app.routers.packets import packet_generator
+import asyncio
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialize in-memory data on startup."""
     get_data()
     print("[OK] Seed data initialized")
+    
+    # Start background tasks
+    task = asyncio.create_task(packet_generator())
+    
     yield
     print("[OK] Application shutting down")
+    task.cancel()
 
 
 app = FastAPI(

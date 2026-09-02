@@ -21,7 +21,8 @@ THREAT_PATTERNS = [
 ]
 
 def generate_packet(src_ip: str, dst_ip: str):
-    is_threat = random.random() > 0.8
+    # Reduced threat probability to 2% to prevent UI spam
+    is_threat = random.random() > 0.98
     risk_score = random.randint(70, 100) if is_threat else random.randint(0, 30)
     
     return {
@@ -110,8 +111,7 @@ async def packet_generator():
             
         await asyncio.sleep(0.5)  # Tick every 500ms
 
-# Start the background task when the module loads
-asyncio.create_task(packet_generator())
+# Removed module-level task creation; handled in main.py lifespan
 
 @router.websocket("/ws")
 async def packet_stream(websocket: WebSocket):
